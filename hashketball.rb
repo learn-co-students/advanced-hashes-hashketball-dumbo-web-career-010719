@@ -157,7 +157,7 @@ def player_numbers(team)
   game_hash
   result = []
   if $hash[:home][:team_name]==team
-    $hash[:home][:players].map do |name,stats|
+    $hash[:home][:players].each do |name,stats|
       stats.each do |k, v|
         if k == :number
           result << v
@@ -165,7 +165,7 @@ def player_numbers(team)
       end
     end
   elsif $hash[:away][:team_name]==team
-    $hash[:away][:players].map do |name,stats|
+    $hash[:away][:players].each do |name,stats|
       stats.each do |k, v|
         if k == :number
           result << v
