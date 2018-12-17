@@ -173,22 +173,15 @@ def player_numbers(name)
 end
 
 def player_stats(player)
-  stats_hash = {}
-  
-  game_hash.each do |team, attributes|
-    game_hash[team].each do |attribute, value|
-      if attribute == :players
-        game_hash[team][:players].each do |name, stats|
-          if name == player
-            stats_hash = game_hash[team][:players][name]
-          end
-        end
+  new_hash = game_hash
+  new_hash.each do |location, data|
+    data.each do |components, stats|
+      if stats.include?(player)
+       return new_hash[location][components][player]
       end
     end
   end
-  stats_hash
 end
-
 
 
 
