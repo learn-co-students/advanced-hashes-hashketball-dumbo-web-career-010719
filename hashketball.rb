@@ -1,5 +1,5 @@
 def game_hash
-  $hash = {
+  {
     :home=> {
       :team_name=> "Brooklyn Nets",
       :colors=> ["Black", "White"],
@@ -119,57 +119,42 @@ def game_hash
 end
 
 def num_points_scored(player)
-  game_hash
-  if $hash[:home][:players].keys.include?(player)
-    return $hash[:home][:players][player][:points]
-  elsif $hash[:away][:players].keys.include?(player)
-    return $hash[:away][:players][player][:points]
+  if game_hash[:home][:players].keys.include?(player)
+    return game_hash[:home][:players][player][:points]
+  elsif game_hash[:away][:players].keys.include?(player)
+    return game_hash[:away][:players][player][:points]
   end
 end
 
 def shoe_size(player)
-  game_hash
-  if $hash[:home][:players].keys.include?(player)
-    return $hash[:home][:players][player][:shoe]
-  elsif $hash[:away][:players].keys.include?(player)
-    return $hash[:away][:players][player][:shoe]
+  if game_hash[:home][:players].keys.include?(player)
+    return game_hash[:home][:players][player][:shoe]
+  elsif game_hash[:away][:players].keys.include?(player)
+    return game_hash[:away][:players][player][:shoe]
   end
 end
 
 def team_colors(team)
-  game_hash
-  if $hash[:home][:team_name]==team
-    return $hash[:home][:colors]
-  elsif $hash[:away][:team_name]==team
-    return $hash[:away][:colors]
+  if game_hash[:home][:team_name]==team
+    return game_hash[:home][:colors]
+  elsif game_hash[:away][:team_name]==team
+    return game_hash[:away][:colors]
   end
 end
 
 def team_names
-  game_hash
-  array = []
-  array << $hash[:home][:team_name]
-  array << $hash[:away][:team_name]
-  return array
+  game_hash.values.map do |value|
+    value[:team_name]
+  end
 end
 
 def player_numbers(team)
-  game_hash
+  # ask how to reformat nested each loops to use .map
   result = []
-  if $hash[:home][:team_name]==team
-    $hash[:home][:players].each do |name,stats|
-      stats.each do |k, v|
-        if k == :number
-          result << v
-        end
-      end
-    end
-  elsif $hash[:away][:team_name]==team
-    $hash[:away][:players].each do |name,stats|
-      stats.each do |k, v|
-        if k == :number
-          result << v
-        end
+  game_hash.values.each do |team_hash|
+    if team_hash[:team_name] == team
+      team_hash[:players].values.each do |stat_hash|
+        result << stat_hash[:number]
       end
     end
   end
@@ -177,28 +162,25 @@ def player_numbers(team)
 end
 
 def player_stats(player)
-  game_hash
-  if $hash[:home][:players].keys.include?(player)
-    return $hash[:home][:players][player]
-  elsif $hash[:away][:players].keys.include?(player)
-    return $hash[:away][:players][player]
+  if game_hash[:home][:players].keys.include?(player)
+    return game_hash[:home][:players][player]
+  elsif game_hash[:away][:players].keys.include?(player)
+    return game_hash[:away][:players][player]
   end
 
 end
 
 def big_shoe_rebounds
-game_hash
-greatest = nil
-index = nil
-shoes = []
-rebounds = []
-  $hash[:home][:players].keys.each do |player|
-    shoes << $hash[:home][:players][player][:shoe]
-    rebounds << $hash[:home][:players][player][:rebounds]
-  end
-  $hash[:away][:players].keys.each do |player|
-    shoes << $hash[:away][:players][player][:shoe]
-    rebounds << $hash[:away][:players][player][:rebounds]
+  greatest = nil
+  index = nil
+  shoes = []
+  rebounds = []
+  
+  game_hash.values.each do |hash1|
+    hash1[:players].keys.each do |player|
+      shoes << hash1[:players][player][:shoe]
+      rebounds << hash1[:players][player][:rebounds]
+    end
   end
   shoes.each_with_index do |ele, idx|
     if greatest == nil || ele > greatest
