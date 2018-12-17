@@ -191,3 +191,51 @@ def big_shoe_rebounds
 
   return rebounds[index]
 end
+
+def most_points_scored
+  counter = Hash.new(0)
+  game_hash.values.each do |hash1|
+    hash1[:players].keys.each do |player|
+      counter[player] += hash1[:players][player][:points]
+    end
+  end
+
+  return counter.key(counter.values.max)
+end
+
+def winning_team
+  counter = Hash.new(0)
+  game_hash.values.each do |info_hash|
+    info_hash[:players].values.each do |stats_hash|
+      counter[info_hash[:team_name]] += stats_hash.fetch(:points)
+    end
+  end
+  return counter.key(counter.values.max)
+end
+
+def player_with_longest_name
+  counter = Hash.new(0)
+  game_hash.values.each do |info_hash|
+    info_hash[:players].keys.each do |player_name|
+      counter[player_name] = player_name.length
+    end
+  end
+  return counter.key(counter.values.max)
+end
+
+def long_name_steals_a_ton?
+  name_and_steals = Hash.new()
+  game_hash.values.each do |info_hash|
+    info_hash[:players].each do |name, stats|
+      name_and_steals[name] = stats[:steals]
+    end
+  end
+#for this to be true, every person with a longer name should steal more than a shorter name person
+  # previous = 0
+  # name_and_steals.sort_by {|k,v| k.length}.each do |sorted|
+  #   return false if sorted[1] < previous
+  #   previous = sorted[1]
+  # end
+  
+  return name_and_steals.values.max == name_and_steals[player_with_longest_name]
+end
