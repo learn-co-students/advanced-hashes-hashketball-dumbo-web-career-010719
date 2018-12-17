@@ -236,6 +236,6 @@ def long_name_steals_a_ton?
   #   return false if sorted[1] < previous
   #   previous = sorted[1]
   # end
-  
+  # true
   return name_and_steals.values.max == name_and_steals[player_with_longest_name]
 end
