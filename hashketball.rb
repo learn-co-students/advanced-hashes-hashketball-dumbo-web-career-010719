@@ -206,3 +206,112 @@ def big_shoe_rebounds
   max_player_rebound
 end
 
+
+
+def most_points_scored
+  most_points = nil
+  most_points_player = ''
+
+  game_hash.each do |location, data|
+    data[:players].each do |names, stats|
+      if most_points == nil || stats[:points] > most_points
+        most_points = stats[:points]
+        most_points_player = names
+      end
+    end
+  end
+
+  most_points_player
+end
+
+
+def winning_team
+  points_home = 0
+  points_away = 0 
+
+  game_hash.each do |location, data|
+    if location == :home
+      data[:players].each do |names, stats|
+        points_home += stats[:points]
+      end 
+
+      puts points_home
+    else
+      data[:players].each do |names, stats|
+        points_away += stats[:points]
+      end
+
+      puts points_away
+    end
+  end
+
+  if points_home > points_away
+    game_hash[:home][:team_name]
+  else
+    game_hash[:away][:team_name]
+  end
+end
+
+winning_team
+
+
+def player_with_longest_name
+  name_length = nil
+  longest = ''
+  # shortest = ''
+
+  game_hash.each do |location, data|
+    data[:players].each do |names, stats|
+      
+      if longest.length < names.length
+      # if longest.length > names.length || 
+      # name_length == nil
+        longest = names
+      # if name_length == nil || shortest.length < names.length
+      #   shortest = names
+      end
+
+      puts "#{names}: #{names.length}"
+    end
+  end
+
+  longest
+  # shortest
+end
+
+
+def shortest_name
+  short = []
+
+  game_hash.each do |location, data|
+    data[:players].each do |names, stats|
+      short.push(names)
+    end
+  end
+  
+  short.sort {|n1, n2| n1.length <=> n2.length}
+end
+
+
+def longest_name_steats_a_ton?
+  longest = []
+  steal_stat = nil
+  steal_player = ''
+
+  game_hash.each do |location, data|
+    data[:players].each do |names, stats|
+      longest.push(names)    
+    end
+
+    data[:players].each do |names, stats|
+      if steal_stat == nil || stats[:steals] > steal_stat
+        puts "#{names}: #{stats[:steals]}"
+        steal_player = names
+      end
+    end
+  end
+  longest_player = longest.sort {|n1, n2| n2.length <=> n1.length}[0]
+
+
+  longest_player == steal_player
+end
