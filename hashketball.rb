@@ -118,96 +118,89 @@ def game_hash
   }
 end
 
-def num_points_scored(player)
-  if game_hash[:home][:players].keys.include?(player)
-    return game_hash[:home][:players][player][:points]
-  elsif game_hash[:away][:players].keys.include?(player)
-    return game_hash[:away][:players][player][:points]
+def get_player_keys
+  game_hash.values.map do |team_hash|
+    team_hash[:players].keys
+  end.flatten
+end
+
+def get_player_values
+  game_hash.values.map do |team_hash|
+    team_hash[:players].values
+  end.flatten
+end
+
+def get_all_players(player = nil)
+  new_hash = {}
+  i = 0
+  while i < get_player_keys.length
+    new_hash[get_player_keys[i]] = get_player_values[i]
+    i += 1
   end
+  if player == nil
+    return new_hash
+  elsif new_hash[player]
+    return new_hash[player]
+  else
+    return "Name does not exist."
+  end
+end
+
+def team_info
+  new_hash = {}
+  game_hash.values.each do |hash1|
+    new_hash[hash1[:team_name]] = hash1[:players]
+  end
+  return new_hash
+end
+
+# ^ helper methods
+
+def num_points_scored(player)
+  get_all_players(player)[:points]
 end
 
 def shoe_size(player)
-  if game_hash[:home][:players].keys.include?(player)
-    return game_hash[:home][:players][player][:shoe]
-  elsif game_hash[:away][:players].keys.include?(player)
-    return game_hash[:away][:players][player][:shoe]
-  end
+  get_all_players(player)[:shoe]
 end
 
 def team_colors(team)
-  if game_hash[:home][:team_name]==team
-    return game_hash[:home][:colors]
-  elsif game_hash[:away][:team_name]==team
-    return game_hash[:away][:colors]
-  end
+  game_hash.values.each {|x| return x[:colors] if x[:team_name] == team}
 end
 
 def team_names
-  game_hash.values.map do |value|
-    value[:team_name]
-  end
+  return team_info.keys
 end
 
 def player_numbers(team)
-  # ask how to reformat nested each loops to use .map
-  result = []
-  game_hash.values.each do |team_hash|
-    if team_hash[:team_name] == team
-      team_hash[:players].values.each do |stat_hash|
-        result << stat_hash[:number]
-      end
-    end
-  end
-  return result
+  team_info[team].values.map {|x| x[:number]}
 end
 
 def player_stats(player)
-  if game_hash[:home][:players].keys.include?(player)
-    return game_hash[:home][:players][player]
-  elsif game_hash[:away][:players].keys.include?(player)
-    return game_hash[:away][:players][player]
-  end
-
+  get_all_players(player)
 end
 
 def big_shoe_rebounds
-  greatest = nil
-  index = nil
-  shoes = []
-  rebounds = []
-  
-  game_hash.values.each do |hash1|
-    hash1[:players].keys.each do |player|
-      shoes << hash1[:players][player][:shoe]
-      rebounds << hash1[:players][player][:rebounds]
-    end
+  counter = Hash.new(0)
+  rebounds = {}
+  get_all_players.each do |player, hash1|
+    counter[player] += hash1[:shoe]
+    rebounds[player] = hash1[:rebounds]
   end
-  shoes.each_with_index do |ele, idx|
-    if greatest == nil || ele > greatest
-      greatest = ele
-      index = idx
-    end
-  end
-
-  return rebounds[index]
+  return rebounds[counter.key(counter.values.max)]
 end
 
 def most_points_scored
   counter = Hash.new(0)
-  game_hash.values.each do |hash1|
-    hash1[:players].keys.each do |player|
-      counter[player] += hash1[:players][player][:points]
-    end
-  end
-
+  get_all_players.each{|player, hash1| counter[player] += hash1[:points]}
   return counter.key(counter.values.max)
 end
 
 def winning_team
   counter = Hash.new(0)
-  game_hash.values.each do |info_hash|
-    info_hash[:players].values.each do |stats_hash|
-      counter[info_hash[:team_name]] += stats_hash.fetch(:points)
+  team_info.each do |team, player_stats|
+    player_stats.values.each do |ele|
+      counter[team] += ele[:points]
     end
   end
   return counter.key(counter.values.max)
