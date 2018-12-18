@@ -32,23 +32,7 @@ def game_hash
  game_hash
 end
 
- def good_practices
-
- 	num_of_rebounds=-1
- 	max=-1
-  	game_hash.each do |home_away, keys|		 
-      		 keys[:players].each do |k,v|   		  	  
-      		 	 if v[:shoe]>max 	
-      		 	 	 max=v[:shoe]
-      		 	 	 num_of_rebounds=v[:rebounds] 
-      		 	 end
-      		 end
-  	end
-    num_of_rebounds
- end
-
-puts good_practices 
-
+ 
 def num_points_scored (player_name_arg)
 	numpoints=-1
 	   game_hash.each do |location, team_data|
@@ -97,25 +81,28 @@ end
 
 
 def team_colors (team_name)
-
+   arr=[]
 	game_hash.each do |home_away, keys|
     		if keys[:team_name] == team_name
-      		 return keys[:colors].map(&:capitalize)
+      		 arr= keys[:colors].map(&:capitalize)
     		end
   	end
+  	arr
 end
+
+#puts team_colors ("Brooklyn Nets")
 
 def team_names
   game_hash.map {|location, keys| 
   	keys[:team_name]
   }
 end
+#puts team_names
 
 def player_numbers (team_name)
 	player_jursey_num =[]
   	game_hash.each do |home_away, keys|
-    	if keys[:team_name] == team_name
-      		 
+    	if keys[:team_name] == team_name 		 
       		 keys[:players].map do |k,v|
       		 	 player_jursey_num.push(v[:number])
       		 end
@@ -151,3 +138,58 @@ def player_numbers (team_name)
   	end
     num_of_rebounds
  end
+
+  def most_points_scored
+   most_points = 0
+   player_with_most_points_scored = ''
+   game_hash.each do |home_away, keys|
+     	keys[:players].each do |player,stats|
+       			
+       				if stats[:points] > most_points
+         				most_points = stats[:points]
+         				player_with_most_points_scored = player
+       				end
+     	end
+   end
+   player_with_most_points_scored
+ end
+ #puts most_points_scored
+
+  
+  def winning_team
+   team_points_arr=[]
+   winning_team = ''
+   max_points=-1
+   game_hash.each do |home_away, keys|
+     		team_points = 0
+     	keys[:players].each do |player,stats|
+       	points = stats[:points]
+       	team_points += points
+     	end
+         
+         if team_points > max_points
+         	max_points=team_points
+            winning_team=game_hash[home_away][:team_name]
+         end
+   end
+     winning_team
+ end
+ puts winning_team
+
+  def player_with_longest_name
+   max_length=-1
+   length=-1
+   player_name_longest=''
+   game_hash.each do |home_away, keys|
+     	keys[:players].each do |player,stats|
+       	     length=player.length
+       	    if length>max_length
+       	    	max_length=length
+                player_name_longest=player
+       	    end
+       	    
+     	end
+   end
+     player_name_longest
+ end
+ #puts player_with_longest_name
