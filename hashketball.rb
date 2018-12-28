@@ -146,11 +146,9 @@ def team_colors(team)
 end
 
 def team_names
-  teams_array = []
-  game_hash.each do |team_location, team_data|
-    teams_array << game_hash[team_location][:team_name]
+  game_hash.collect do |team_location, team_data|
+    game_hash[team_location][:team_name]
   end
-  teams_array
 end
 
 def player_numbers(team)
@@ -222,5 +220,5 @@ def winning_team
 end
 
 def player_with_longest_name(game_hash)
-  
+
 end
