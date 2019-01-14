@@ -121,154 +121,91 @@ def game_hash
 end
 
 def num_points_scored player_name
-  # game_hash[:away][:players]["Jeff Adrien"][:points]
-  #return  v1[:players][p][:points]
+# returns the points scored by player_name
   game_hash.each do |t, v1|
-    v1[:players].each do |p, v2|
-      if p == player_name
-        return v2[:points]
-      end
-    end
+    v1[:players].each { |p, v2| return v2[:points] if p == player_name }
   end
 end
 
 
 def shoe_size player_name
-# knows the shoe size of each player
-game_hash.each do |t, v1|
-  v1[:players].select do |p, v2|
-    if p == player_name
-      return v2[:shoe]
-    end
+# knows the shoe size of player_name
+  game_hash.each do |t, v1|
+    v1[:players].select { |p, v2| return v2[:shoe] if p == player_name }
   end
- end
 end
 
 def team_colors team_name
-  game_hash.select do |t, v1|
-    if v1[:team_name] == team_name
-      return v1[:colors]
-    end
-  end
+# knows the team colors of team_name
+  game_hash.select { |t, v1| return v1[:colors] if v1[:team_name] == team_name }
 end
 
 def team_names
-  game_hash.collect do |t, v1|
-    v1[:team_name]
-  end
+# return team names
+  game_hash.collect { |t, v1| v1[:team_name] }
 end
 
 def player_numbers team_name
-  pNums = []
+# returns the players' jersey numbers by team_name
   game_hash.each do |t, v1|
-    if v1[:team_name] == team_name
-      v1[:players].collect do |p, v2|
-        pNums.push(v2[:number])
-      end
-    end
+    return v1[:players].collect { |p, v2| v2[:number] } if v1[:team_name] == team_name
   end
-  pNums.sort
 end
 
 
 def player_stats player_name
+# returns all stats for player_name
   game_hash.each do |t, v1|
-    v1[:players].each do |p, v2|
-      if p == player_name
-        return v2
-      end
-    end
+    v1[:players].each { |p, v2| return v2 if p == player_name}
   end
 end
 
 def big_shoe_rebounds
-  # returns the number of rebounds of the player with the biggest shoe size
+# returns the number of rebounds of the player with the biggest shoe size
   shoes = {}
-
   game_hash.each do |t, v1|
-    v1[:players].each do |p, v2|
-      shoes[p] = v2[:shoe]
-      end
-    end
-
-    playerArr = shoes.max_by {|k,v| v}
-    player = playerArr[0]
-
-    game_hash.each do |t, v1|
-      v1[:players].select do |p, v2|
-        if p == player
-          return v2[:rebounds]
-        end
-      end
-     end
+    v1[:players].each { |p, v2| shoes[p] = v2[:shoe] }
+  end
+  playerArr = shoes.max_by {|k,v| v}
+  game_hash.each do |t, v1|
+    v1[:players].select  { |p, v2| return v2[:rebounds] if p == playerArr.first}
+  end
 end
-
-
-# Which player has the most points? Call the method most_points_scored.
 
 def most_points_scored
+# returns the player that has the most points
   points = {}
-
   game_hash.each do |t, v1|
-    v1[:players].each do |p, v2|
-      points[p] = v2[:points]
-      end
-    end
-    playerArr = points.max_by {|k,v| v}
-    player = playerArr[0]
+    v1[:players].each { |p, v2| points[p] = v2[:points] }
+  end
+  playerArr = points.max_by {|k,v| v}
+  player = playerArr.first
 end
-
-# Which team has the most points? Call the method winning_team.
 
 def winning_team
-  home = []
-  away = []
-
-  game_hash[:home][:players].each do |p, v1|
-    home.push(v1[:points])
-  end
-  game_hash[:away][:players].each do |p, v1|
-    home.push(v1[:points])
-  end
-
-  if home.inject {|sum, n| sum + n} > home.inject {|sum, n| sum + n}
-    game_hash[:home][:team_name]
-  else
-    game_hash[:home][:team_name]
-  end
+# returns the team that has the most points
+  home_points = 0
+  away_points = 0
+  game_hash[:home][:players].each{|p,v| home_points += v[:points]}
+  game_hash[:away][:players].each{|p,v| away_points += v[:points]}
+  home_points > away_points ? game_hash[:home][:team_name] : game_hash[:away][:team_name]
 end
-
-# Which player has the longest name? Call the method player_with_longest_name.
 
 def player_with_longest_name
-  names = []
-  game_hash.each do |t, v1|
-    v1[:players].each do |p, v2|
-      names.push(p)
-      end
-    end
-    player = names.max_by(&:length)
+# returns the player that has the longest name
+  home_name = game_hash[:home][:players].max_by{ |k,v| k.length }
+  away_name = game_hash[:away][:players].max_by{ |k,v| k.length }
+  home_name.first > away_name.first ? home_name.first : away_name.first
 end
 
-# Write a method that returns true if the player with the longest name had the most steals. Call the method long_name_steals_a_ton?.
-
 def long_name_steals_a_ton?
+# returns true if the player with the longest name had the most steals
   longName = player_with_longest_name
   longNameSteals = ""
   stealsArr =[]
-
+  game_hash.each { |t, v1| longNameSteals = v1[:players][longName][:steals] if v1[:players].include?(longName)}
   game_hash.each do |t, v1|
-    if v1[:players].include?(longName)
-      longNameSteals = v1[:players][longName][:steals]
-    end
+    v1[:players].each { |p, v2| stealsArr.push(v2[:steals]) }
   end
-
-  game_hash.each do |t, v1|
-    v1[:players].each do |p, v2|
-      stealsArr.push(v2[:steals])
-    end
-  end
-
   longNameSteals >= stealsArr.max ? true : false
-
 end
